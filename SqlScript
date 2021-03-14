@@ -1,0 +1,143 @@
+
+
+CREATE DATABASE Library;
+
+CREATE TABLE Users 
+(
+	Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	[Login] NVARCHAR(50) NOT NULL,
+	[Password] NVARCHAR(50) NOT NULL
+)
+
+Insert INTO Users VALUES 
+	('laura23','qwerty23'),
+	('damir1998','wery12'),
+	('alina','12234')
+
+Insert INTO Users VALUES 
+	('Katay','87903')
+
+CREATE TABLE Books
+(
+	Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	[Name] NVARCHAR(50) NOT NULL,
+)
+
+
+Insert INTO Books VALUES 
+	('Мастер и Маргарита'),
+	('Собачье сердце'),
+	('Отцы и Дети'),
+	('Парфюмер'),
+	('Похороните меня за плинтусом'),
+	('Великий Гэтсби'),
+	('Милые кости'),
+	('Зов Ктулху'),
+	('Добрые предзнаменования')
+
+
+CREATE TABLE Authors 
+(
+	Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	FullName NVARCHAR(100) NOT NULL
+
+)
+
+Insert INTO Authors VALUES 
+	('Михаил Афанасьевич Булгаков'),
+	('Фрэнсис Скотт Фицджеральд'),
+	('Лавкрафт Говард Филлипс'),
+	('Элис Сиболд'), --4
+	('Павел Владимирович Санаев'),
+	('Патрик Зюскинд'),
+	('Александр Сергеевич Пушкин '),
+	('Иван Сергеевич Тургенев'),--8
+	('Нил Гейман'),
+	('Терри Пратчетт')
+
+
+CREATE TABLE BookAuthor
+(
+	Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	BookId INT,
+	AuthorId INT,
+	CONSTRAINT FK_BookAuthor_Book FOREIGN KEY(BookId)
+			REFERENCES Books(id),
+	CONSTRAINT FK_BookAuthor_Author FOREIGN KEY(AuthorId)
+			REFERENCES Authors(id)
+)
+
+Insert INTO BookAuthor VALUES
+	(1,1),
+	(2,1),
+	(3,8),
+	(4,6),
+	(5,5),
+	(6,2),
+	(7,4),
+	(8,3),
+	(9,9),
+	(9,10)
+
+
+Create TABLE Ticket
+(
+	Id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	UserId INT,
+	CONSTRAINT FK_User_Ticket FOREIGN KEY(UserId)
+			REFERENCES Users(id),
+	BookId INT,
+	CONSTRAINT FK_Books_Ticket FOREIGN KEY(BookId)
+			REFERENCES Books(id)
+)
+
+
+Insert INTO Ticket VALUES
+	(1,1),
+	(2,4),
+	(3,9)
+
+
+SELECT u.[login], b.[name], a.FullName FROM Ticket t
+JOIN Users u ON u.id=t.UserId
+Join Books b On b.id=bookId
+join BookAuthor ba on ba.BookId=b.id
+join Authors a on a.id=ba.AuthorId
+
+
+1) Выведите список должников. 
+
+SELECT u.Id, u.[login], u.[Password] FROM Ticket t
+JOIN Users u ON u.Id=t.UserId
+JOIN Books b On b.Id=BookId
+
+
+
+2) Выведите список авторов книги №3 (по порядку из таблицы ‘Book’). 
+
+SELECT a.FullName FROM Authors a
+join BookAuthor ba on ba.AuthorId=a.Id
+join Books b on b.Id = ba.BookId
+where b.Id=3
+
+
+3) Выведите список книг, которые доступны в данный момент. 
+
+
+Select b.[Name] from books b
+where not exists (Select * from Ticket t where BookId=b.Id)
+
+
+4) Вывести список книг, которые на руках у пользователя №2. 
+
+SELECT u.[Login], b.Name  FROM Users u
+join Ticket t on t.UserId=u.Id
+join Books b on b.Id = t.BookId
+where u.Id = 2
+
+
+5) Обнулите задолженности всех должников. 
+
+Delete Ticket
+
+Select * from Ticket
